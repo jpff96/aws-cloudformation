@@ -1,0 +1,46 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Launch single EC2 Instance",
+  "Resources": {
+    "MyInstance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "AvailabilityZone": "us-east-1a",
+        "InstanceType": "t2.micro",
+        "ImageId": "ami-0baf67670ca0f3719",
+        "SecurityGroups": [
+          {
+            "Ref": "MySG"
+          }
+        ],
+        "KeyName": "ec2key",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Test Instance"
+          }
+        ]
+      }
+    },
+    "MySG": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable HTTP & SSH access",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    }
+  }
+}

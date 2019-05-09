@@ -1,0 +1,63 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Nested Stacks",
+  "Parameters": {
+    "KeyName": {
+      "Description": "Existing KeyPair",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "Must be an existing key pair"
+    },
+    "VPCCIDR": {
+      "Description": "VPC CIDR",
+      "Type": "String",
+      "Default": "10.0.0.0/16",
+    },
+    "SubnetCIDR": {
+      "Description": "Subnet CIDR",
+      "Type": "String",
+      "Default": "10.0.2.0/24",
+    }
+  },
+  "Resources": {
+    "VPCStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/.../VPC.template.json",
+        "Parameters": {
+          "KeyPairName": {
+            "Ref": "KeyName"
+          },
+          "VPCCIDR": {
+            "Ref": "VPCCIDR"
+          },
+          "SubnetCIDR": {
+            "Ref": "SubnetCIDR"
+          }
+        }
+      }
+    },
+    "DatabaseStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3.amazonaws.com/.../Database.template.json",
+        "Parameters": {
+          "KeyPairName": {
+            "Ref": "KeyName"
+          },
+          "SubnetId": {
+            "Fn::GetAtt": [
+              "VPCStack",
+              "Outputs.SubnetId"
+            ]
+          },
+          "VPCId": {
+            "Fn::GetAtt": [
+              "VPCStack",
+              "Outputs.VPCId"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
